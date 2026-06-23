@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>treckcat 操作マニュアル</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.3/semantic.min.css" />
+  <style>
+    body {
+      font-family: "Meiryo", "Hiragino Kaku Gothic ProN", sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      color: #333;
+      line-height: 1.7;
+    }
+    h1 { border-bottom: 3px solid #008bab; padding-bottom: 10px; color: #008bab; }
+    h2 { border-left: 5px solid #008bab; padding-left: 12px; margin-top: 40px; }
+    h3 { color: #555; }
+    img { max-width: 100%; border: 1px solid #ddd; border-radius: 6px; margin: 10px 0; }
+    .screen { background: #f8f8f8; border-radius: 8px; padding: 16px; margin: 16px 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th { background: #008bab; color: #fff; padding: 8px 12px; text-align: left; }
+    td { border: 1px solid #ddd; padding: 8px 12px; vertical-align: top; }
+    tr:nth-child(even) td { background: #f5f5f5; }
+    .icon-btn {
+      display: inline-flex !important;
+      width: 32px !important; height: 32px !important;
+      border-radius: 50% !important;
+      align-items: center; justify-content: center;
+      font-size: 14px;
+      margin: 0 3px;
+      padding: 0 !important;
+    }
+    .icon-btn i { margin: 0 !important; }
+    .tag { display: inline-block; background: #008bab; color: #fff; border-radius: 4px; padding: 1px 8px; font-size: 12px; }
+    .warn { background: #fff8e1; border-left: 4px solid #ffc107; padding: 10px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; }
+    .tip  { background: #e8f5e9; border-left: 4px solid #4caf50; padding: 10px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; }
+    .callout-row { display: flex; gap: 20px; align-items: flex-start; margin: 16px 0; }
+    .callout-row img { flex-shrink: 0; width: 400px; }
+    .callout-row .desc { flex: 1; }
+    .num { display: inline-block; background: #008bab; color: #fff; border-radius: 50%; width: 22px; height: 22px; text-align: center; line-height: 22px; font-size: 12px; font-weight: bold; margin-right: 4px; }
+    .lag-demo { display: inline-block; background: #ffcccc; border: 1px solid #ddd; border-radius: 4px; padding: 4px 12px; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<h1>treckcat 操作マニュアル</h1>
+
+<!-- ===== 画面構成 ===== -->
+<h2>1. 画面構成</h2>
+
+<div class="screen">
+  <img src="manual_img/01_initial.png" alt="起動直後の画面">
+</div>
+
+<table>
+  <tr><th>エリア</th><th>説明</th></tr>
+  <tr><td>マップ (上部)</td><td>OpenStreetMap ベースの地図。KML 読み込み後にルートが表示される。ドラッグでパン、スクロールでズーム。</td></tr>
+  <tr><td>チャート (下部)</td><td>ルートの高度プロファイル。X 軸: 距離 (km)、Y 軸: 高度 (m)。クリックで任意地点にジャンプ可能。</td></tr>
+  <tr><td>コントロールパネル (右上)</td><td>各種操作ボタン。下記参照。</td></tr>
+  <tr><td>データ表示 (左下)</td><td>選択中サイクリストの経過時間・走行距離・速度をリアルタイム表示。</td></tr>
+</table>
+
+<!-- ===== コントロールパネル ===== -->
+<h2>2. コントロールパネル</h2>
+
+<div class="screen">
+  <img src="manual_img/02_control.png" alt="コントロールパネル">
+</div>
+
+<table>
+  <tr><th>ボタン</th><th>名称</th><th>説明</th></tr>
+  <tr>
+    <td><button class="circular blue ui icon button icon-btn"><i class="play icon"></i></button></td>
+    <td>再生</td>
+    <td>アニメーションを開始する。再生中はアイコンが黄色になる。ファイルが未読み込みの場合は無効。</td>
+  </tr>
+  <tr>
+    <td><button class="circular blue ui icon button icon-btn"><i class="pause icon"></i></button></td>
+    <td>一時停止</td>
+    <td>再生中に押すと停止。もう一度押すと再開。一時停止中はアイコンが黄色になる。</td>
+  </tr>
+  <tr>
+    <td><button class="circular red ui icon button icon-btn"><i class="stop icon"></i></button></td>
+    <td>停止</td>
+    <td>再生を終了し、全マーカーをスタート地点に戻す。</td>
+  </tr>
+  <tr>
+    <td>
+      <button class="circular teal ui icon button icon-btn"><i class="bicycle icon"></i></button>
+      <button class="circular orange ui icon button icon-btn"><i class="walking icon"></i></button>
+    </td>
+    <td>モード切替</td>
+    <td>自転車モード（青緑）とウォーキングモード（橙）を切り替える。ファイル読み込み前に選択する。モードによってノイズ除去の設定が変わる。</td>
+  </tr>
+  <tr>
+    <td><button class="circular pink ui icon button icon-btn"><i class="cloud upload icon"></i></button></td>
+    <td>ファイルアップロード</td>
+    <td>KML または GPX ファイルを選択してルートを読み込む。最大 4 ファイル。再生中は無効。</td>
+  </tr>
+  <tr>
+    <td><button class="circular ui icon button icon-btn"><i class="question icon"></i></button></td>
+    <td>操作マニュアル</td>
+    <td>このマニュアルを新しいタブで開く。</td>
+  </tr>
+  <tr>
+    <td><span class="lag-demo"><i class="fast forward icon"></i> Rate</span></td>
+    <td>倍速選択</td>
+    <td>再生速度の倍率を選択。再生中は変更不可。遅延が発生すると背景が赤くなる。</td>
+  </tr>
+</table>
+
+<!-- ===== ファイルアップロード ===== -->
+<h2>3. ファイルのアップロード</h2>
+
+<ol>
+  <li>モード切替ボタンで用途を選択する（自転車 / ウォーキング）。</li>
+  <li>ピンク色の <strong>アップロードボタン</strong> をクリック。</li>
+  <li>ファイル選択ダイアログで <code>.kml</code> または <code>.gpx</code> ファイルを選択。</li>
+  <li>読み込みが完了すると:
+    <ul>
+      <li>マップにルートが色付きで描画される。</li>
+      <li>コントロールパネルにヘルメットアイコンが追加される。</li>
+      <li>チャートに高度プロファイルが表示される。</li>
+      <li>読み込んだルートが自動的に選択状態になる。</li>
+    </ul>
+  </li>
+  <li>最大 4 ファイルまで繰り返し読み込み可能。複数ファイルで異なるモードを使用できる。</li>
+</ol>
+
+<div class="tip">
+  💡 モードによってノイズ除去の閾値が異なります。自転車ログには自転車モード、ウォーキングログにはウォーキングモードで読み込んでください。
+</div>
+<div class="warn">
+  ⚠ 再生中はアップロードできません。停止してから行ってください。
+</div>
+
+<!-- ===== トラッカー選択 ===== -->
+<h2>4. トラッカーの選択</h2>
+
+<p>ヘルメットアイコンをクリックすることで、データ表示とチャートの追跡対象を切り替えます。</p>
+
+<table>
+  <tr><th>操作</th><th>結果</th></tr>
+  <tr><td>ヘルメットをクリック (未選択 → 選択)</td><td>アイコンが明るくなる。左下にそのサイクリストの時間・距離・速度が表示される。チャートがそのルートに切り替わる。</td></tr>
+  <tr><td>選択中のヘルメットをもう一度クリック</td><td>選択解除。データ表示が非表示になる。</td></tr>
+  <tr><td>別のヘルメットをクリック</td><td>前の選択が解除され、新しいサイクリストが選択される。</td></tr>
+</table>
+
+<div class="tip">
+  💡 選択中のサイクリストは、ルートが画面外に出ると自動的にマップが再センタリングされます。
+</div>
+
+<!-- ===== 倍速設定 ===== -->
+<h2>5. 倍速設定</h2>
+
+<p>「Rate」ドロップダウンから倍速を選択します。</p>
+
+<table>
+  <tr><th>倍速</th><th>用途</th></tr>
+  <tr><td>10x</td><td>ゆっくり確認したいとき</td></tr>
+  <tr><td>50x</td><td>標準的な確認</td></tr>
+  <tr><td>100x</td><td>中程度の速さ</td></tr>
+  <tr><td>500x</td><td>長距離ルートの確認</td></tr>
+  <tr><td>1000x</td><td>全体の流れを素早く確認</td></tr>
+</table>
+
+<div class="warn">
+  ⚠ 倍速の変更は再生前に行ってください。再生中はドロップダウンが無効になります。
+</div>
+
+<!-- ===== 再生操作 ===== -->
+<h2>6. 再生操作</h2>
+
+<ol>
+  <li>KML を読み込み、倍速を選択する。</li>
+  <li><strong>再生ボタン (▶)</strong> をクリック。</li>
+  <li>マップ上のアイコンがルートに沿って移動し始める。左下に経過時間・距離・速度が更新される。</li>
+</ol>
+
+<h3>一時停止・再開</h3>
+<ul>
+  <li><strong>一時停止ボタン (⏸)</strong> で停止。再度押すと再開。</li>
+  <li>マップをドラッグしている間も自動的に一時停止し、ドラッグ終了後に再開する。</li>
+  <li>ブラウザタブを切り替えると自動一時停止、戻ると再開する。</li>
+</ul>
+
+<h3>停止</h3>
+<ul>
+  <li><strong>停止ボタン (■)</strong> で全サイクリストがスタート地点に戻る。</li>
+</ul>
+
+<!-- ===== チャート操作 ===== -->
+<h2>7. チャートの操作</h2>
+
+<div class="screen">
+  <img src="manual_img/03_chart.png" alt="高度チャート">
+</div>
+
+<table>
+  <tr><th>操作</th><th>説明</th></tr>
+  <tr><td>チャートのデータ点をクリック</td><td>再生停止中のみ有効。クリックした地点にマーカーがジャンプする。</td></tr>
+  <tr><td>再生中の赤点</td><td>現在の走行位置を示す。選択中のサイクリストに連動して移動する。</td></tr>
+</table>
+
+<!-- ===== データ表示 ===== -->
+<h2>8. データ表示</h2>
+
+<p>画面左下に選択中サイクリストのリアルタイムデータが表示されます。</p>
+
+<table>
+  <tr><th>表示</th><th>内容</th></tr>
+  <tr><td>00:00:00</td><td>経過時間 (実時間換算)</td></tr>
+  <tr><td>0.00km</td><td>スタートからの走行距離</td></tr>
+  <tr><td>0.00km/h</td><td>現在の速度</td></tr>
+  <tr><td>⚠15 (赤字)</td><td>遅延インジケータ。表示されている場合は下記を参照。</td></tr>
+</table>
+
+<p>サイクリストごとに表示色が異なります。</p>
+<table>
+  <tr><th>サイクリスト</th><th>色</th></tr>
+  <tr><td>1人目</td><td style="color:#008bab; font-weight:bold;">青緑</td></tr>
+  <tr><td>2人目</td><td style="color:#a9608a; font-weight:bold;">紫</td></tr>
+  <tr><td>3人目</td><td style="color:#588045; font-weight:bold;">緑</td></tr>
+  <tr><td>4人目</td><td style="color:#a66323; font-weight:bold;">橙</td></tr>
+</table>
+
+<!-- ===== 遅延インジケータ ===== -->
+<h2>9. 遅延インジケータ</h2>
+
+<p>高倍速再生時、フレームレートがルートのポイント数に追いつかない場合に表示されます。</p>
+
+<table>
+  <tr><th>表示</th><th>意味</th></tr>
+  <tr>
+    <td><span style="color:red; font-weight:bold;">⚠15</span> (データ表示右端)</td>
+    <td>選択中サイクリストが直前フレームで 15 ポイントをスキップしたことを示す。数値が大きいほど遅延が大きい。</td>
+  </tr>
+  <tr>
+    <td><span class="lag-demo"><i class="fast forward icon"></i> Rate</span> (背景が赤)</td>
+    <td>いずれかのサイクリストで遅延が発生中。再生開始・停止でリセットされる。</td>
+  </tr>
+</table>
+
+<div class="tip">
+  💡 遅延が頻発する場合は倍速を下げてください。
+</div>
+
+<!-- ===== 複数ルート ===== -->
+<h2>10. 複数ルートの同時再生</h2>
+
+<ol>
+  <li>KML を複数回アップロードする (最大 4 ファイル)。</li>
+  <li>各ルートはそれぞれの色でマップに表示される。</li>
+  <li>再生すると全サイクリストが同時にスタートする。</li>
+  <li>ヘルメットアイコンをクリックして追跡対象を切り替えながら観察できる。</li>
+</ol>
+
+<div class="warn">
+  ⚠ チャートは選択中の 1 人分のみ表示されます。
+</div>
+
+<!-- ===== フッター ===== -->
+<hr style="margin-top: 50px;">
+<p style="color: #999; font-size: 12px; text-align: center;">treckcat 操作マニュアル</p>
+
+</body>
+</html>
